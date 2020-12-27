@@ -1,0 +1,16 @@
+# Linters for Development
+bandit
+pycodestyle
+pydocstyle
+pylint
+mypy
+
+# Testing tools
+pytest
+pytest-cov
+codecov
+safety
+
+# Packaging
+twine
+wheel
