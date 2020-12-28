@@ -1,0 +1,44 @@
+
+@@@ Module structure and purpose
+
+└── anstosstools
+    |
+    ├── __init__.py
+    ├── data.py  (Hold the master classes and functionality for anstoss data)
+    ├── datamanager.py  (Manage the data, import export, ...)
+    └── parser
+        ├── __init__.py
+        └── sav_parser
+            ├── __init__.py
+            ├── sav_manager.py  (Read/Write save files based on json config)
+            └── config
+                └── anstoss3
+                    └── v1.40
+                        ├── sections
+                        |   └── *.json  (Config files defining each section, read/write and map)
+                        └── main.json  (Main config to define overall files and is stuff)
+
+@@@ Config Design
+
+main.json (Example, some more might be needed, not all might be needed)
+    - Generic e.g.
+        - encoding
+        - file_init_str
+        - sections_start_prefix
+        - section_end_prefix
+    - File Read Order
+    - File to Country Mapping
+    - Sections & Subsections
+    - Section, Start End Tag
+    - Hidden Sections
+    - Nested Sections
+
+section_*.json
+    - Data mapping of fields
+    - fields
+    - field names
+    - field types
+    - allowed values
+    - field convertions
+
+@@@ Classes and Data storage

@@ -1,0 +1,39 @@
+
+### QUESTIONS ###
+
+@@@ How to load Sav files in a generic expandable way?
+- Use generic Config Files, e.g. 1 Set for Anstoss 3 v1.4
+- Main Config, define generic variables, e.g. FIle opener, prefix/suffix..., which sections per file
+- Use section specific config, fields, position, maybe filetypes
+
+@@@ How to store the data once read? Static vs Dynamic Classes?
+- end goal is to load/store Json
+- so either way build up class with dynamic dictionary
+
+@@@ Verify the Json file format if used for config? e.g. with https://pypi.org/project/jsonschema/
+- We can do that a bit later once we have more json files
+- Yes, that way we can check what we support and what we need there to be etc
+- maybe can be stored in a separate file as well, usefull since we have multiple config files with the same definition
+
+@@@ How to map sav read data to storage names e.g. for fields?
+- Section config should define what we need
+- We could
+    a.) Not define any restraints on the field names and just use the ones from the importer
+        - Pro: Not having another Meta definition of a class,
+        - Cons: It will be hard to combine different Anstoss versions as the fields won't match and the json putput will only be
+    b.) Define the allowed classes and fields in Meta to translate to
+        - Pro: Can combine different Anstoss versions
+        - Cons: Very Abstract, and harder to work with
+    c.) Define a (Dynamic) Master Class per section and refer to if by config
+        - Pro: Generic way of data, can have export in there
+        - Cons: More code
+
+
+@@@ Where to define generic field convertions, 
+- somewhere generic outside section, but can be referenced by section
+- or in section config have a keyword
+
+
+@@@ How to Verify the json format against other json formats?
+    - We probably should have some tests for our config?
+        - e.g. test to load all the fields and see that we can add it to the main data
