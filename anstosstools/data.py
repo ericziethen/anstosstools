@@ -34,9 +34,27 @@ idea:
 
 '''
 
+
 class GenericData():
     """Base class for generic data."""
     allowed_fields = []
+    default_fields = []
+
+    def __init__(self):
+        for field in self.default_fields:
+            setattr(self, field, field)
+
+    def from_dict(self, data_dict):
+        for field in self.allowed_fields:
+            setattr(self, field, data_dict[field])
+
+    def to_dict(self):
+        data_dict = {}
+
+        for field in self.allowed_fields:
+            data_dict[field] = getattr(self, field)
+
+        return data_dict
 
     def __setattr__(self, name, value):
         if name not in self.allowed_fields:
@@ -47,9 +65,7 @@ class GenericData():
 
 class Nation(GenericData):
     """A generic class representing data for a nation."""
-    allowed_fields = [
-        'Land', 'Unknown_02', 'Kuerzel', 'Unknown_03', 'Unknown_04', 'Unknown_05',
-        'Unknown_06', 'Unknown_07', 'Unknown_08', 'Unknown_09', 'Unknown_10']
-
-
-
+    default_fields = [
+        'Unknown_02', 'Unknown_03', 'Unknown_04', 'Unknown_05', 'Unknown_06',
+        'Unknown_07', 'Unknown_08', 'Unknown_09', 'Unknown_10']
+    allowed_fields = ['Land', 'Kuerzel'] + default_fields

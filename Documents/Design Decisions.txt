@@ -5,7 +5,7 @@
     |
     ├── __init__.py
     ├── data.py  (Hold the master classes and functionality for anstoss data)
-    ├── datamanager.py  (Manage the data, import export, ...)
+    ├── data_manager.py  (Manage the data, import export, ...)
     └── parser
         ├── __init__.py
         └── sav_parser
