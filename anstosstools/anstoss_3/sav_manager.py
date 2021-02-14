@@ -1,6 +1,6 @@
 
 SUPPORTED_FILES = [
-
+    'Laender.sav'
 ]
 
 SAV_ENCODING = 'windows-1252'
