@@ -1,24 +1,37 @@
 
-# from anstosstools.data_manager import DataManager
-# from anstosstools.data import Nation
+# import os
+
+# from anstosstools.anstoss_3.sav_manager import SAV_ENCODING, SavManager
 
 
-# def test_save_to_json():
-#     data_manager = DataManager()
-#     nation = Nation()
-#     nation.Land = 'Deutschland'
-#     nation.Kuerzel = 'DEU'
+# def write_test_file_from_lines(file_path, line_list):
+#     with open(file_path, 'w', encoding=SAV_ENCODING) as file_ptr:
+#         for line in line_list:
+#             file_ptr.write(line)
 
 
-#     TODO - OUR DATA SHOULD KEEP TRACK OF IDS IF KNOWN, E.G FOR COUNTRY THE KEY SHOULD BE ID OR NAME, OR MULTIPLE
+# def test_convert_laender_sav(tmpdir):
+#     test_laender_sav_lines = [
+#         '17373592', '%SECT%NATION',
+#         '%SECT%NATION', 'Sonstige', '1', 'SON', '2', '3', '4', '5', '6', '7', '8', '9', '%ENDSECT%NATION',
+#         '%SECT%NATION', 'Deutschland', '11', 'DEU', '12', '13', '14', '15', '16', '17', '18', '19', '%ENDSECT%NATION',
+#         '%ENDSECT%NATION'
+#     ]
 
+#     test_file_path = os.path.join(tmpdir, 'test_file')
+#     write_test_file_from_lines(test_file_path, test_laender_sav_lines)
 
-#     data_manager.add(nation)
+#     sav_manager = SavManager()
+#     assert sav_manager.data is None
 
-#     #data_manager.get_
+#     sav_manager.parse_file(test_file_path)
+#     assert len(sav_manager.data['NATION']) == 2
 
-#     assert False
+#     nation_json = sav_manager.get_json_for_section('NATION')
 
+#     assert nation_json['Deutschland']['Land'] == 'Deutschland'
+#     assert nation_json['Deutschland']['Kuerzel'] == 'DEU'
+#     assert nation_json['Deutschland']['Kuerzel'] == 'DEU'
 
-# def test_read_from_json():
-#     assert False
+#     assert nation_json['Sonstige']['Land'] == 'Sonstige'
+#     assert nation_json['Sonstige']['Kuerzel'] == 'SON'
