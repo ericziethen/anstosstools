@@ -7,6 +7,7 @@ from anstosstools.data import (
 
 SECTION_DEFINITIONS = {
     'NATION': {
+        'id_field': 'Land',
         'class': Nation,
         'sav_pos_list': Nation.allowed_fields,
     }
@@ -31,6 +32,17 @@ class SavManager():
 
         for section in SECTION_DEFINITIONS:
             self.data[section] = []
+
+    def get_json_for_section(self, section_name):
+        json_data = {}
+        section_name = section_name.upper()
+        id_field = SECTION_DEFINITIONS[section_name]['id_field']
+        print(F'self.data[{section_name}]', self.data[section_name])
+        for section in self.data[section_name]:
+            print('SectionType', section.__dict__)
+            json_data[getattr(section, id_field)] = section.to_dict()
+
+        return json_data
 
     def _parse_file(self, file_path):
         file_name = os.path.basename(file_path)
@@ -66,7 +78,7 @@ class SavManager():
                     assert section_name is None
                     assert section_line_count is None
                     section_name = line.removeprefix(SECTION_START_PREFIX)
-                    section = SECTION_DEFINITIONS[section_name]['class']
+                    section = SECTION_DEFINITIONS[section_name]['class']()
                     section_line_count = 0
                     print(F'  >> Open Section: "{section_name}"')
                 elif line.startswith(SECTION_END_PREFIX):  # Check if section end
