@@ -1,37 +1,37 @@
 
-# import os
+import os
 
-# from anstosstools.anstoss_3.sav_manager import SAV_ENCODING, SavManager
-
-
-# def write_test_file_from_lines(file_path, line_list):
-#     with open(file_path, 'w', encoding=SAV_ENCODING) as file_ptr:
-#         for line in line_list:
-#             file_ptr.write(line)
+from anstosstools.anstoss_3.sav_manager import SAV_ENCODING, SavManager
 
 
-# def test_convert_laender_sav(tmpdir):
-#     test_laender_sav_lines = [
-#         '17373592', '%SECT%NATION',
-#         '%SECT%NATION', 'Sonstige', '1', 'SON', '2', '3', '4', '5', '6', '7', '8', '9', '%ENDSECT%NATION',
-#         '%SECT%NATION', 'Deutschland', '11', 'DEU', '12', '13', '14', '15', '16', '17', '18', '19', '%ENDSECT%NATION',
-#         '%ENDSECT%NATION'
-#     ]
+def write_test_file_from_lines(file_path, line_list):
+    with open(file_path, 'w', encoding=SAV_ENCODING) as file_ptr:
+        for line in line_list:
+            file_ptr.write(line + '\n')
 
-#     test_file_path = os.path.join(tmpdir, 'test_file')
-#     write_test_file_from_lines(test_file_path, test_laender_sav_lines)
 
-#     sav_manager = SavManager()
-#     assert sav_manager.data is None
+def test_convert_laender_sav(tmpdir):
+    test_laender_sav_lines = [
+        '17373592', '%SECT%NATION',
+        '%SECT%NATION', 'Sonstige', '1', 'SON', '2', '3', '4', '5', '6', '7', '8', '9', '%ENDSECT%NATION',
+        '%SECT%NATION', 'Deutschland', '11', 'DEU', '12', '13', '14', '15', '16', '17', '18', '19', '%ENDSECT%NATION',
+        '%ENDSECT%NATION'
+    ]
 
-#     sav_manager.parse_file(test_file_path)
-#     assert len(sav_manager.data['NATION']) == 2
+    test_file_path = os.path.join(tmpdir, 'laender.sav')
+    print('test_file_path', test_file_path)
+    write_test_file_from_lines(test_file_path, test_laender_sav_lines)
 
-#     nation_json = sav_manager.get_json_for_section('NATION')
+    sav_manager = SavManager()
 
-#     assert nation_json['Deutschland']['Land'] == 'Deutschland'
-#     assert nation_json['Deutschland']['Kuerzel'] == 'DEU'
-#     assert nation_json['Deutschland']['Kuerzel'] == 'DEU'
+    sav_manager._parse_file(test_file_path)
+    assert len(sav_manager.data['NATION']) == 2
 
-#     assert nation_json['Sonstige']['Land'] == 'Sonstige'
-#     assert nation_json['Sonstige']['Kuerzel'] == 'SON'
+    nation_json = sav_manager.get_json_for_section('NATION')
+
+    assert nation_json['Deutschland']['Land'] == 'Deutschland'
+    assert nation_json['Deutschland']['Kuerzel'] == 'DEU'
+    assert nation_json['Deutschland']['Kuerzel'] == 'DEU'
+
+    assert nation_json['Sonstige']['Land'] == 'Sonstige'
+    assert nation_json['Sonstige']['Kuerzel'] == 'SON'
