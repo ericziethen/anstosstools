@@ -1,4 +1,5 @@
 
+import json
 import logging
 import os
 
@@ -17,7 +18,7 @@ SECTION_DEFINITIONS = {
 }
 
 SUPPORTED_FILES = [
-    'Laender.sav'
+    'LAENDER.SAV'
 ]
 
 FILE_PREFIX_SUFFIX = {
@@ -45,7 +46,7 @@ class SavManager():
 
         return json_data
 
-    def _parse_file(self, file_path):
+    def parse_file(self, file_path):
         file_name = os.path.basename(file_path)
         logger.debug(F'FileName: {file_name}')
 
@@ -56,6 +57,10 @@ class SavManager():
 
             for line_num, line in enumerate(file_ptr, start=1):
                 line = line.rstrip()
+
+                # Ignore blank lines
+                if not line:
+                    continue
 
                 logger.debug(F'LINE_NUM: {line_num} - {line}')
                 # Ignore file opener line
@@ -101,7 +106,17 @@ class SavManager():
 
 
 def convert_sav_dir_to_json(*, sav_dir, json_dir):
-    pass
+    sav_manager = SavManager()
+    for file_name in os.listdir(sav_dir):
+        if file_name.upper() in SUPPORTED_FILES:
+            file_path = os.path.join(sav_dir, file_name)
+            sav_manager.parse_file(file_path)
+
+    for section_name in SECTION_DEFINITIONS:
+        section_json = sav_manager.get_json_for_section(section_name)
+        section_path = os.path.join(json_dir, section_name + '.json')
+        with open(section_path, 'w', encoding='utf-8') as file_ptr:
+            json.dump(section_json, file_ptr, indent=4, sort_keys=True)
 
 
 def convert_json_dir_to_sav(*, json_dir, sav_dir):
