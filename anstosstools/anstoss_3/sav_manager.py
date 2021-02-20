@@ -1,9 +1,12 @@
 
+import logging
 import os
 
 from anstosstools.data import (
     Nation,
 )
+
+logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 SECTION_DEFINITIONS = {
     'NATION': {
@@ -37,16 +40,14 @@ class SavManager():
         json_data = {}
         section_name = section_name.upper()
         id_field = SECTION_DEFINITIONS[section_name]['id_field']
-        print(F'self.data[{section_name}]', self.data[section_name])
         for section in self.data[section_name]:
-            print('SectionType', section.__dict__)
             json_data[getattr(section, id_field)] = section.to_dict()
 
         return json_data
 
     def _parse_file(self, file_path):
         file_name = os.path.basename(file_path)
-        print('FileName:', file_name)
+        logger.debug(F'FileName: {file_name}')
 
         with open(file_path, 'r', encoding=SAV_ENCODING) as file_ptr:
             section = None
@@ -56,20 +57,20 @@ class SavManager():
             for line_num, line in enumerate(file_ptr, start=1):
                 line = line.rstrip()
 
-                print('LINE_NUM', line_num, line)
+                logger.debug(F'LINE_NUM: {line_num} - {line}')
                 # Ignore file opener line
                 if line_num == 1:
-                    print(F'  >> Ignore File Identifier: "{line}"')
+                    logger.debug(F'  >> Ignore File Identifier: "{line}"')
                     continue
 
                 # Ignore file prefix (extra section sourounding the file)
                 if (line_num == 2) and (file_name.upper() in FILE_PREFIX_SUFFIX):
-                    print(F'  >> Ignore File Opener: "{line}"')
+                    logger.debug(F'  >> Ignore File Opener: "{line}"')
                     continue
 
                 # Ignore file closing line
                 if section is None and line.startswith(SECTION_END_PREFIX):
-                    print(F'  >> Ignore File Closer: "{line}"')
+                    logger.debug(F'  >> Ignore File Closer: "{line}"')
                     continue
 
                 # Process data
@@ -80,12 +81,12 @@ class SavManager():
                     section_name = line.removeprefix(SECTION_START_PREFIX)
                     section = SECTION_DEFINITIONS[section_name]['class']()
                     section_line_count = 0
-                    print(F'  >> Open Section: "{section_name}"')
+                    logger.debug(F'  >> Open Section: "{section_name}"')
                 elif line.startswith(SECTION_END_PREFIX):  # Check if section end
                     assert section is not None
                     assert section_name is not None
                     assert section_line_count is not None
-                    print(F'  >> Close Section: "{section_name}"')
+                    logger.debug(F'  >> Close Section: "{section_name}"')
                     self.data[section_name].append(section)
                     section = None
                     section_name = None
@@ -98,7 +99,6 @@ class SavManager():
                     setattr(section, field_name, line)
                     section_line_count += 1
 
-        print('DATA', self.data)
 
 def convert_sav_dir_to_json(*, sav_dir, json_dir):
     pass
