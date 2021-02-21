@@ -25,9 +25,10 @@ FILE_PREFIX_SUFFIX = {
     'LAENDER.SAV': ('%SECT%NATION', '%ENDSECT%NATION')
 }
 
-# SAV_ENCODING = 'windows-1252'
+JSON_ENCODING = 'utf-8'
+SAV_ENCODING = 'windows-1252'
 #SAV_ENCODING = 'ISO-8859-1'  # using chardet, 71% probability
-SAV_ENCODING = "Windows-1250"
+# SAV_ENCODING = "Windows-1250"
 SECTION_START_PREFIX = '%SECT%'
 SECTION_END_PREFIX = '%ENDSECT%'
 
@@ -47,6 +48,13 @@ class SavManager():
             json_data[getattr(section, id_field)] = section.to_dict()
 
         return json_data
+
+    def add_section_from_dict(self, section_name, json_dict):
+        section = SECTION_DEFINITIONS[section_name]['class']()
+        for field_name, value in json_dict.items():
+            setattr(section, field_name, value)
+
+        self.data[section_name].append(section)
 
     def parse_file(self, file_path):
         file_name = os.path.basename(file_path)
@@ -106,7 +114,13 @@ class SavManager():
                     setattr(section, field_name, line)
                     section_line_count += 1
 
+    def write_sections_to_sav(self, file_path):
+        for section_name, section_list in self.data.items():
+            for section in section_list:
+                pass
 
+
+# TODO - WE NEED UNIT TESTS FOR THOSE 2 FUNCTIONS AS WELL
 def convert_sav_dir_to_json(*, sav_dir, json_dir):
     sav_manager = SavManager()
     for file_name in os.listdir(sav_dir):
@@ -117,9 +131,22 @@ def convert_sav_dir_to_json(*, sav_dir, json_dir):
     for section_name in SECTION_DEFINITIONS:
         section_json = sav_manager.get_json_for_section(section_name)
         section_path = os.path.join(json_dir, section_name + '.json')
-        with open(section_path, 'w', encoding='utf-8') as file_ptr:
+        with open(section_path, 'w', encoding=JSON_ENCODING) as file_ptr:
             json.dump(section_json, file_ptr, indent=4, sort_keys=True, ensure_ascii=False)
 
 
 def convert_json_dir_to_sav(*, json_dir, sav_dir):
-    pass
+    sav_manager = SavManager()
+
+    # Read the json files
+    for file_name in os.listdir(json_dir):
+        section_name = os.path.splitext(file_name)[0]
+        if section_name.upper() in SECTION_DEFINITIONS:
+            file_path = os.path.join(json_dir, file_name)
+            with open(file_path, 'r', encoding=JSON_ENCODING) as file_ptr:
+                file_dict = json.load(file_ptr)
+                for _, section_dict in file_dict.items():
+                    sav_manager.add_section_from_dict(section_name, section_dict)
+
+    # Write the files to sav
+    sav_manager.write_sections_to_sav(sav_dir)
