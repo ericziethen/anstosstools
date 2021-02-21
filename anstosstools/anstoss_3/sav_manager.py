@@ -132,6 +132,9 @@ class SavManager():
         if 'prefix_suffix' in FILE_DEFINITIONS[file_name]:
             data_lines.append(FILE_DEFINITIONS[file_name]['prefix_suffix'][1])
 
+        # Trigger a final blank line
+        data_lines.append('')
+
         file_path = os.path.join(dest_dir, file_name.capitalize())
         with open(file_path, 'w', encoding=SAV_ENCODING) as file_ptr:
             file_ptr.writelines('\n'.join(data_lines))
@@ -164,7 +167,7 @@ class SavManager():
 
 
 # TODO - WE NEED UNIT TESTS FOR THOSE 2 FUNCTIONS AS WELL
-def convert_sav_dir_to_json(*, sav_dir, json_dir):
+def convert_sav_dir_to_json(*, sav_dir, json_dir, sort_keys=True):
     sav_manager = SavManager()
     for file_name in os.listdir(sav_dir):
         if file_name.upper() in FILE_DEFINITIONS:
@@ -175,7 +178,7 @@ def convert_sav_dir_to_json(*, sav_dir, json_dir):
         section_json = sav_manager.get_json_for_section(section_name)
         section_path = os.path.join(json_dir, section_name + '.json')
         with open(section_path, 'w', encoding=JSON_ENCODING) as file_ptr:
-            json.dump(section_json, file_ptr, indent=4, sort_keys=True, ensure_ascii=False)
+            json.dump(section_json, file_ptr, indent=4, sort_keys=sort_keys, ensure_ascii=False)
 
 
 def convert_json_dir_to_sav(*, json_dir, sav_dir):

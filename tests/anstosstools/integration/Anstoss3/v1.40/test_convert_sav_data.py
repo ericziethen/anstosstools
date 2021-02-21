@@ -20,7 +20,7 @@ def test_import_export_test_dir(tmpdir):
     os.mkdir(sav_out_dir)
 
     # Convert to json
-    convert_sav_dir_to_json(sav_dir=ANSTOSS_3_SAV_INPUT_DIR, json_dir=json_dir)
+    convert_sav_dir_to_json(sav_dir=ANSTOSS_3_SAV_INPUT_DIR, json_dir=json_dir, sort_keys=False)
 
     # convert back to sav
     convert_json_dir_to_sav(json_dir=json_dir, sav_dir=sav_out_dir)
@@ -40,7 +40,9 @@ def test_import_export_test_dir(tmpdir):
                 in_file_list = list(in_file_ptr)
                 convert_file_list = list(convert_file_ptr)
 
-                assert len(in_file_list) == len(convert_file_list)
 
                 for idx, line in enumerate(in_file_list):
+                    #print(idx, line)
                     assert line == convert_file_list[idx]
+
+                assert len(in_file_list) == len(convert_file_list)
