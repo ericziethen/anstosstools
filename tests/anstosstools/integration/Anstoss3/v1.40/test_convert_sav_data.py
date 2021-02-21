@@ -4,7 +4,7 @@ import os
 import pytest
 
 from anstosstools.anstoss_3.sav_manager import (
-    SUPPORTED_FILES, SAV_ENCODING,
+    FILE_DEFINITIONS, SAV_ENCODING,
     convert_sav_dir_to_json, convert_json_dir_to_sav
 )
 
@@ -26,7 +26,7 @@ def test_import_export_test_dir(tmpdir):
     convert_json_dir_to_sav(json_dir=json_dir, sav_dir=sav_out_dir)
 
     # compare supported files
-    for file_name in SUPPORTED_FILES:
+    for file_name in FILE_DEFINITIONS:
         in_file_path = os.path.join(ANSTOSS_3_SAV_INPUT_DIR, file_name)
         convert_file_path = os.path.join(sav_out_dir, file_name)
 

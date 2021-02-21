@@ -17,12 +17,10 @@ SECTION_DEFINITIONS = {
     }
 }
 
-SUPPORTED_FILES = [
-    'LAENDER.SAV'
-]
-
-FILE_PREFIX_SUFFIX = {
-    'LAENDER.SAV': ('%SECT%NATION', '%ENDSECT%NATION')
+FILE_DEFINITIONS = {
+    'LAENDER.SAV': {
+        'prefix_suffix': ('%SECT%NATION', '%ENDSECT%NATION'),
+    }
 }
 
 JSON_ENCODING = 'utf-8'
@@ -36,8 +34,8 @@ class SavManager():
     def __init__(self):
         self.data = {}
 
-        for section in SECTION_DEFINITIONS:
-            self.data[section] = []
+        for section_name in SECTION_DEFINITIONS:
+            self.data[section_name] = []
 
     def get_json_for_section(self, section_name):
         json_data = {}
@@ -56,7 +54,7 @@ class SavManager():
         self.data[section_name].append(section)
 
     def parse_file(self, file_path):
-        file_name = os.path.basename(file_path)
+        file_name = os.path.basename(file_path).upper()
         logger.debug(F'FileName: {file_name}')
 
         with open(file_path, 'r', encoding=SAV_ENCODING) as file_ptr:
@@ -78,7 +76,7 @@ class SavManager():
                     continue
 
                 # Ignore file prefix (extra section sourounding the file)
-                if (line_num == 2) and (file_name.upper() in FILE_PREFIX_SUFFIX):
+                if (line_num == 2) and ('prefix_suffix' in FILE_DEFINITIONS[file_name]):
                     logger.debug(F'  >> Ignore File Opener: "{line}"')
                     continue
 
@@ -116,33 +114,41 @@ class SavManager():
     def write_sav_file(self, dest_dir, file_name):
         data_lines = []
 
+        file_name = file_name.upper()
+
         # Add file id number
         data_lines.append(SAV_FILE_ID)
 
         # Add File Prefix
-        if file_name.upper() in FILE_PREFIX_SUFFIX:
-            data_lines.append(FILE_PREFIX_SUFFIX[file_name.upper()][0])
+        if 'prefix_suffix' in FILE_DEFINITIONS[file_name]:
+            data_lines.append(FILE_DEFINITIONS[file_name]['prefix_suffix'][0])
 
         # Add File data
+        data_lines += self._build_write_data(file_name)
 
         # Add file suffix
-        if file_name.upper() in FILE_PREFIX_SUFFIX:
-            data_lines.append(FILE_PREFIX_SUFFIX[file_name.upper()][1])
+        if 'prefix_suffix' in FILE_DEFINITIONS[file_name]:
+            data_lines.append(FILE_DEFINITIONS[file_name]['prefix_suffix'][1])
 
         file_path = os.path.join(dest_dir, file_name.capitalize())
         with open(file_path, 'w', encoding=SAV_ENCODING) as file_ptr:
             file_ptr.writelines('\n'.join(data_lines))
 
     def export_to_sav(self, out_dir):
-        for file_name in SUPPORTED_FILES:
+        for file_name in FILE_DEFINITIONS:
             self.write_sav_file(out_dir, file_name)
+
+    def _build_write_data(self, file_name):
+        data_list = []
+
+        return data_list
 
 
 # TODO - WE NEED UNIT TESTS FOR THOSE 2 FUNCTIONS AS WELL
 def convert_sav_dir_to_json(*, sav_dir, json_dir):
     sav_manager = SavManager()
     for file_name in os.listdir(sav_dir):
-        if file_name.upper() in SUPPORTED_FILES:
+        if file_name.upper() in FILE_DEFINITIONS:
             file_path = os.path.join(sav_dir, file_name)
             sav_manager.parse_file(file_path)
 
