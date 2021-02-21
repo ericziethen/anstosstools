@@ -10,7 +10,7 @@ def write_test_file_from_lines(file_path, line_list):
             file_ptr.write(line + '\n')
 
 
-def test_convert_laender_sav(tmpdir):
+def test_convert_laender_sav_to_json(tmpdir):
     test_laender_sav_lines = [
         '17373592', '%SECT%NATION',
         '%SECT%NATION', 'Sonstige', '1', 'SON', '2', '3', '4', '5', '6', '7', '8', '9', '%ENDSECT%NATION',

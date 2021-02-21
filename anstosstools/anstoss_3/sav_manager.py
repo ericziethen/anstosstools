@@ -25,7 +25,9 @@ FILE_PREFIX_SUFFIX = {
     'LAENDER.SAV': ('%SECT%NATION', '%ENDSECT%NATION')
 }
 
-SAV_ENCODING = 'windows-1252'
+# SAV_ENCODING = 'windows-1252'
+#SAV_ENCODING = 'ISO-8859-1'  # using chardet, 71% probability
+SAV_ENCODING = "Windows-1250"
 SECTION_START_PREFIX = '%SECT%'
 SECTION_END_PREFIX = '%ENDSECT%'
 
@@ -116,7 +118,7 @@ def convert_sav_dir_to_json(*, sav_dir, json_dir):
         section_json = sav_manager.get_json_for_section(section_name)
         section_path = os.path.join(json_dir, section_name + '.json')
         with open(section_path, 'w', encoding='utf-8') as file_ptr:
-            json.dump(section_json, file_ptr, indent=4, sort_keys=True)
+            json.dump(section_json, file_ptr, indent=4, sort_keys=True, ensure_ascii=False)
 
 
 def convert_json_dir_to_sav(*, json_dir, sav_dir):
