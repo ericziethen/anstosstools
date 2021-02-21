@@ -25,19 +25,22 @@ def test_import_export_test_dir(tmpdir):
     # convert back to sav
     convert_json_dir_to_sav(json_dir=json_dir, sav_dir=sav_out_dir)
 
-    # # compare supported files
-    # for file_name in SUPPORTED_FILES:
-    #     in_file_path = os.path.join(ANSTOSS_3_SAV_INPUT_DIR, file_name)
-    #     convert_file_path = os.path.join(sav_out_dir, file_name)
+    # compare supported files
+    for file_name in SUPPORTED_FILES:
+        in_file_path = os.path.join(ANSTOSS_3_SAV_INPUT_DIR, file_name)
+        convert_file_path = os.path.join(sav_out_dir, file_name)
 
-    #     assert os.path.exists(convert_file_path)
+        print('in_file_path', in_file_path)
+        print('convert_file_path', convert_file_path)
 
-    #     with open(in_file_path, 'r', encoding=SAV_ENCODING) as in_file_ptr:
-    #         with open(convert_file_path, 'r', encoding=SAV_ENCODING) as convert_file_ptr:
-    #             in_file_list = list(in_file_ptr)
-    #             convert_file_list = list(convert_file_ptr)
+        assert os.path.exists(convert_file_path)
 
-    #             assert len(in_file_list) == len(convert_file_list)
+        with open(in_file_path, 'r', encoding=SAV_ENCODING) as in_file_ptr:
+            with open(convert_file_path, 'r', encoding=SAV_ENCODING) as convert_file_ptr:
+                in_file_list = list(in_file_ptr)
+                convert_file_list = list(convert_file_ptr)
 
-    #             for idx, line in enumerate(in_file_list):
-    #                 assert line == convert_file_list[idx]
+                assert len(in_file_list) == len(convert_file_list)
+
+                for idx, line in enumerate(in_file_list):
+                    assert line == convert_file_list[idx]

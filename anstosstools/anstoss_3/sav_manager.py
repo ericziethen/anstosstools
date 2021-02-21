@@ -27,8 +27,7 @@ FILE_PREFIX_SUFFIX = {
 
 JSON_ENCODING = 'utf-8'
 SAV_ENCODING = 'windows-1252'
-#SAV_ENCODING = 'ISO-8859-1'  # using chardet, 71% probability
-# SAV_ENCODING = "Windows-1250"
+SAV_FILE_ID = '17373592'
 SECTION_START_PREFIX = '%SECT%'
 SECTION_END_PREFIX = '%ENDSECT%'
 
@@ -114,10 +113,29 @@ class SavManager():
                     setattr(section, field_name, line)
                     section_line_count += 1
 
-    def write_sections_to_sav(self, file_path):
-        for section_name, section_list in self.data.items():
-            for section in section_list:
-                pass
+    def write_sav_file(self, dest_dir, file_name):
+        data_lines = []
+
+        # Add file id number
+        data_lines.append(SAV_FILE_ID)
+
+        # Add File Prefix
+        if file_name.upper() in FILE_PREFIX_SUFFIX:
+            data_lines.append(FILE_PREFIX_SUFFIX[file_name.upper()][0])
+
+        # Add File data
+
+        # Add file suffix
+        if file_name.upper() in FILE_PREFIX_SUFFIX:
+            data_lines.append(FILE_PREFIX_SUFFIX[file_name.upper()][1])
+
+        file_path = os.path.join(dest_dir, file_name.capitalize())
+        with open(file_path, 'w', encoding=SAV_ENCODING) as file_ptr:
+            file_ptr.writelines('\n'.join(data_lines))
+
+    def export_to_sav(self, out_dir):
+        for file_name in SUPPORTED_FILES:
+            self.write_sav_file(out_dir, file_name)
 
 
 # TODO - WE NEED UNIT TESTS FOR THOSE 2 FUNCTIONS AS WELL
@@ -149,4 +167,4 @@ def convert_json_dir_to_sav(*, json_dir, sav_dir):
                     sav_manager.add_section_from_dict(section_name, section_dict)
 
     # Write the files to sav
-    sav_manager.write_sections_to_sav(sav_dir)
+    sav_manager.export_to_sav(sav_dir)
