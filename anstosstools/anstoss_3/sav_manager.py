@@ -14,12 +14,14 @@ SECTION_DEFINITIONS = {
         'id_field': 'Land',
         'class': Nation,
         'sav_pos_list': Nation.allowed_fields,
+        'section_open_close_tags': True,
     }
 }
 
 FILE_DEFINITIONS = {
     'LAENDER.SAV': {
         'prefix_suffix': ('%SECT%NATION', '%ENDSECT%NATION'),
+        'write_sections': ['NATION']
     }
 }
 
@@ -140,6 +142,23 @@ class SavManager():
 
     def _build_write_data(self, file_name):
         data_list = []
+
+        file_name = file_name.upper()
+
+        for file_name in FILE_DEFINITIONS:
+            for write_section in FILE_DEFINITIONS[file_name]['write_sections']:
+                for section in self.data[write_section]:
+                    # Add section opener
+                    if 'section_open_close_tags' in SECTION_DEFINITIONS[write_section]:
+                        data_list.append('%SECT%' + write_section)
+
+                    # Add fields
+                    for field in SECTION_DEFINITIONS[write_section]['sav_pos_list']:
+                        data_list.append(getattr(section, field))
+
+                    # Add section closer
+                    if 'section_open_close_tags' in SECTION_DEFINITIONS[write_section]:
+                        data_list.append('%ENDSECT%' + write_section)
 
         return data_list
 
